@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Liar's Poker Simulator",
+  "version": "1.0",
+  "description": "A simulator for Liar's Poker from the game Liar's Bar So the game can be played in person.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "logo.png",
+      "32": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    }
+  },
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "permissions": []
+}
