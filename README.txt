@@ -11,5 +11,6 @@ To lock the extension you can right click extension and open inspect, then minim
 Alternatively you can open the popup.js file to load the program in browser however it will not feature audio.
 To enable audio open the extension folder in terminal (cd path/to/your/Liars_Poker_Sim) and run; python -m http.server 8000
 Then enter into browser; http://localhost:8000/popup.html
+To run the app on your local server python must be downloaded- https://www.python.org/downloads/
 
 
