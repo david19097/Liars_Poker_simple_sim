@@ -54,20 +54,33 @@ function render() {
     const row = document.createElement('tr');
     row.className = '';
 
-    const bulletInput = document.createElement('select');
-    bulletOptions.forEach(val => {
-      const option = document.createElement('option');
-      option.value = val;
-      option.textContent = val;
-      if (val === player.bullets) option.selected = true;
-      bulletInput.appendChild(option);
-    });
+    const customSelect = document.createElement('div');
+    customSelect.className = 'custom-select';
 
-    bulletInput.disabled = !player.alive;
-    bulletInput.addEventListener('change', e => {
-      player.bullets = parseInt(e.target.value);
-      render();
+    const selected = document.createElement('div');
+    selected.className = 'selected';
+    selected.textContent = player.bullets;
+    customSelect.appendChild(selected);
+
+    const optionsList = document.createElement('div');
+    optionsList.className = 'options-list';
+    bulletOptions.forEach(val => {
+      const option = document.createElement('div');
+      option.className = 'option';
+      option.textContent = val;
+      option.onclick = () => {
+        player.bullets = val;
+        render();
+      };
+      optionsList.appendChild(option);
     });
+    customSelect.appendChild(optionsList);
+
+    selected.onclick = () => {
+  document.querySelectorAll('.options-list').forEach(el => el.classList.remove('show')); // close others
+  optionsList.classList.toggle('show'); // toggle this one
+};
+
 
     const radioInput = document.createElement('input');
     radioInput.type = 'checkbox';
@@ -90,7 +103,7 @@ function render() {
       </td>
     `;
 
-    row.children[1].appendChild(bulletInput);
+    row.children[1].appendChild(customSelect);
     row.children[3].appendChild(radioInput);
 
     tbody.appendChild(row);
@@ -118,16 +131,19 @@ function render() {
     app.appendChild(increaseBtn);
   });
 
-  // 🔍 Add death probability summary
   const summaryDiv = document.createElement('div');
-  summaryDiv.style.marginTop = '10px';
+  summaryDiv.id = 'death-summary';
 
-  let summaryHTML = '<h4>Death Probability This Round</h4><ul>';
-  for (let i = 0; i <= players.length; i++) {
-    const prob = probabilityOfNDying(i, players);
-    summaryHTML += `<li>${i} player${i !== 1 ? 's' : ''} dying: ${(prob * 100).toFixed(2)}%</li>`;
-  }
-  summaryHTML += '</ul>';
+
+const untickedPlayers = players.filter(p => p.alive && !p.radio).length;
+
+let summaryHTML = '<h4 class="summary-heading">Chances of Death</h4><ul class="summary-list">';
+for (let i = 0; i <= untickedPlayers; i++) {
+  const prob = probabilityOfNDying(i, players);
+  summaryHTML += `<li>${i} player${i !== 1 ? 's' : ''} dying: ${(prob * 100).toFixed(2)}%</li>`;
+}
+summaryHTML += '</ul>';
+
 
   summaryDiv.innerHTML = summaryHTML;
   app.appendChild(summaryDiv);
@@ -174,7 +190,6 @@ function fire() {
     );
   }
 
-  // 🔊 Play audio based on deaths
   let soundName = 'blank';
   if (deathsThisRound > 0 && deathsThisRound <= 4) {
     soundName = `gunshot_${deathsThisRound}`;
