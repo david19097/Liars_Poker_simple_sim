@@ -13,32 +13,29 @@ function render() {
   const app = document.getElementById('app');
   app.innerHTML = '';
 
-const headerSection = document.createElement('div');
-headerSection.className = 'header-section';
+  const headerSection = document.createElement('div');
+  headerSection.className = 'header-section';
 
-const heading = document.createElement('h1');
-heading.textContent = "LIAR'S POKER SIMULATOR";
-heading.className = 'neon-title';
-headerSection.appendChild(heading);
+  const heading = document.createElement('h1');
+  heading.textContent = "LIAR'S POKER SIMULATOR";
+  heading.className = 'neon-title';
+  headerSection.appendChild(heading);
 
-const controls = document.createElement('div');
-controls.className = 'controls';
-controls.innerHTML = `
-  <button id="reset">Reset</button>
-  <button id="add">+</button>
-  <button id="remove">-</button>
-`;
-headerSection.appendChild(controls);
+  const controls = document.createElement('div');
+  controls.className = 'controls';
+  controls.innerHTML = `
+    <button id="reset">Reset</button>
+    <button id="add">+</button>
+    <button id="remove">-</button>
+  `;
+  headerSection.appendChild(controls);
 
-// Add combined header section to the page
-app.appendChild(headerSection);
-
+  app.appendChild(headerSection);
 
   const table = document.createElement('table');
   table.style.width = '100%';
   table.style.borderCollapse = 'collapse';
 
-  // ✅ Create proper <thead>
   const thead = document.createElement('thead');
   thead.innerHTML = `
     <tr>
@@ -51,7 +48,6 @@ app.appendChild(headerSection);
   `;
   table.appendChild(thead);
 
-  // ✅ Create <tbody> for players
   const tbody = document.createElement('tbody');
 
   players.forEach(player => {
@@ -59,7 +55,7 @@ app.appendChild(headerSection);
     row.className = '';
 
     const bulletInput = document.createElement('select');
-    [1, 2, 3, 4, 5, 8].forEach(val => {
+    bulletOptions.forEach(val => {
       const option = document.createElement('option');
       option.value = val;
       option.textContent = val;
@@ -83,20 +79,15 @@ app.appendChild(headerSection);
     });
 
     row.innerHTML = `
-    <td style="text-align: center;">Player ${player.id}</td>
-    <td style="text-align: center;"></td>
-    <td style="text-align: center;">${player.radio ? '100%' : (survivalTable[player.bullets] || 0) + '%'}</td>
-    <td style="text-align: center;"></td>
-    <td style="text-align: center;" class="${
-  player.winner
-    ? 'winner'
-    : player.alive
-    ? 'alive'
-    : 'dead-text'
-}">
-  ${player.winner ? 'Winner' : player.alive ? 'Alive' : 'Dead'}
-</td>
-
+      <td style="text-align: center;">Player ${player.id}</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;">${player.radio ? '100%' : (survivalTable[player.bullets] || 0) + '%'}</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;" class="${
+        player.winner ? 'winner' : player.alive ? 'alive' : 'dead-text'
+      }">
+        ${player.winner ? 'Winner' : player.alive ? 'Alive' : 'Dead'}
+      </td>
     `;
 
     row.children[1].appendChild(bulletInput);
@@ -112,28 +103,34 @@ app.appendChild(headerSection);
   fireBtn.textContent = 'Fire';
   fireBtn.onclick = fire;
   app.appendChild(fireBtn);
+
   players.forEach((player, index) => {
-  if (!player.alive) return;
+    if (!player.alive) return;
 
-  const increaseBtn = document.createElement('button');
-  increaseBtn.textContent = `Player ${player.id}`;
-  increaseBtn.onclick = () => {
-    const currentIndex = bulletOptions.indexOf(player.bullets);
-    const nextIndex = Math.min(currentIndex + 1, bulletOptions.length - 1);
-    player.bullets = bulletOptions[nextIndex];
-    render();
-  };
-  app.appendChild(increaseBtn);
-});
+    const increaseBtn = document.createElement('button');
+    increaseBtn.textContent = `Player ${player.id}`;
+    increaseBtn.onclick = () => {
+      const currentIndex = bulletOptions.indexOf(player.bullets);
+      const nextIndex = Math.min(currentIndex + 1, bulletOptions.length - 1);
+      player.bullets = bulletOptions[nextIndex];
+      render();
+    };
+    app.appendChild(increaseBtn);
+  });
 
+  // 🔍 Add death probability summary
+  const summaryDiv = document.createElement('div');
+  summaryDiv.style.marginTop = '10px';
 
-/*
-const resultsDiv = document.createElement('div');
-resultsDiv.innerHTML = `<h4>Roulette Results</h4><ul>${
-  results.map(r => `<li>Player ${r.id}: ${r.result}</li>`).join('')
-}</ul>`;
-app.appendChild(resultsDiv);
-*/
+  let summaryHTML = '<h4>Death Probability This Round</h4><ul>';
+  for (let i = 0; i <= players.length; i++) {
+    const prob = probabilityOfNDying(i, players);
+    summaryHTML += `<li>${i} player${i !== 1 ? 's' : ''} dying: ${(prob * 100).toFixed(2)}%</li>`;
+  }
+  summaryHTML += '</ul>';
+
+  summaryDiv.innerHTML = summaryHTML;
+  app.appendChild(summaryDiv);
 
   document.getElementById('reset').onclick = () => {
     players = players.map(p => createPlayer(p.id));
@@ -151,8 +148,6 @@ app.appendChild(resultsDiv);
     render();
   };
 }
-
-
 
 function fire() {
   results = [];
@@ -191,5 +186,38 @@ function fire() {
   render();
 }
 
+function probabilityOfNDying(n, players) {
+  const alivePlayers = players.filter(p => p.alive && !p.radio);
+  const deathChances = alivePlayers.map(p => chancesTable[p.bullets] || 0);
+  const total = deathChances.length;
+
+  if (n > total) return 0;
+
+  const indices = [...Array(total).keys()];
+  const combos = kCombinations(indices, n);
+
+  let totalProb = 0;
+
+  combos.forEach(combo => {
+    let prob = 1;
+    for (let i = 0; i < total; i++) {
+      const chance = deathChances[i];
+      prob *= combo.includes(i) ? chance : (1 - chance);
+    }
+    totalProb += prob;
+  });
+
+  return totalProb;
+}
+
+function kCombinations(set, k) {
+  if (k === 0) return [[]];
+  if (set.length < k) return [];
+
+  const [first, ...rest] = set;
+  const withFirst = kCombinations(rest, k - 1).map(combo => [first, ...combo]);
+  const withoutFirst = kCombinations(rest, k);
+  return [...withFirst, ...withoutFirst];
+}
 
 document.addEventListener('DOMContentLoaded', render);
