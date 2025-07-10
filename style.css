@@ -1,9 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700&display=swap');
-
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: Arial Narrow, Arial, sans-serif;
+  font-weight: bold;
   background-color: #111; /* Deep black background */
-  color: white;
   margin: 0;
   padding: 10px;
   width: 450px;
@@ -20,7 +18,9 @@ body {
   gap: 6px;
 }
 button {
-  font-family: 'Luckiest Guy', cursive;
+  font-family: Arial Narrow, Arial, sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
   background-color: #222;
   color: white;
   border: 2px solid #555;
@@ -56,45 +56,132 @@ td {
 
 th {
   background-color: #222;
-  font-family: 'Luckiest Guy', cursive;
-  font-size: 16px;
+  font-family: Arial Narrow, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 14px;
   letter-spacing: 1px;
   color: #ffd450;
 }
 
 select,
 input[type="checkbox"] {
+  accent-color: #ffd450;
   display: block;
   margin: 0 auto;
 }
 
 .alive {
   color: white !important;
+  font-weight: bold;
 }
 
 .dead-text {
   color: #f85352 !important;
+  font-weight: bold;
 }
 
 .winner {
   color: limegreen !important;
   font-weight: bold;
 }
-@import url('https://fonts.googleapis.com/css2?family=Neon+Tubes&display=swap');
 
 .neon-title {
-  font-family: 'Neon Tubes', cursive;
-  font-size: 22px;
+  font-family: 'Arial', Arial, sans-serif;
+  font-size: 24px;
   text-align: left;
   margin: 0;
   flex-shrink: 1;
-  color: transparent; /* Make the fill invisible */
+  color: transparent; /* Make fill invisible */
   -webkit-text-stroke: 1px #f4302f;
   text-shadow:
     0 0 5px #f4302f,
-    0 0 10px #f4302f,
-    0 0 20px #f4302f,
-    0 0 40px #f4302f,
-    0 0 80px #f4302f;
-  margin-bottom: 15px;
+    0 0 10px #f4302f;
+}
+
+#death-summary {
+  color: white;
+  font-weight: bold;
+  margin-top: 15px;
+  padding: 8px;
+  border: 1px solid #444;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+#death-summary h4 {
+  margin: 0 0 8px 0;
+  font-family: Arial Narrow, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  color: #ffd450;
+}
+
+#death-summary ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+#death-summary li {
+  font-family: Arial Narrow, Arial, sans-serif;
+  font-weight: bold;
+  text-align: center;
+  padding: 2px 0;
+  font-size: 14px;
+}
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.selected {
+  background-color: #222;
+  color: #ffd450;
+  border: 1px solid #555;
+  padding: 6px 12px;
+  padding-right: 24px; /* space for arrow */
+  text-align: center;
+  cursor: pointer;
+  font-family: Arial Narrow, Arial, sans-serif;
+  position: relative;
+}
+
+.selected::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #ffd450;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.options-list {
+  display: none;
+  position: absolute;
+  background-color: #222;
+  border: 1px solid #555;
+  z-index: 1;
+  width: 100%;
+}
+
+
+.options-list.show {
+  display: block;
+}
+
+.option {
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+}
+
+.option:hover {
+  background-color: #444;
 }
